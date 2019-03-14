@@ -85,7 +85,7 @@ public class Application implements IApplication {
     QuoteClient client = new QuoteClient();
     for (int i = 0; i < numberOfQuotes; i++) {
       Quote quote = client.fetchQuote();
-      storeQuote(quote, "quote-" + (i+1)  );
+      storeQuote(quote, "quote-" + (i+1) +".utf8" );
       LOG.info("Received a new joke with " + quote.getTags().size() + " tags.");
       for (String tag : quote.getTags()) {
         LOG.info("> " + tag);
@@ -129,7 +129,7 @@ public class Application implements IApplication {
     file.getParentFile().mkdirs();
     file.createNewFile();
 
-    BufferedWriter writer = new BufferedWriter(new FileWriter(path + filename));
+    BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + filename));
     writer.write(quote.getQuote(), 0, quote.getQuote().length());
     writer.close();
   }
