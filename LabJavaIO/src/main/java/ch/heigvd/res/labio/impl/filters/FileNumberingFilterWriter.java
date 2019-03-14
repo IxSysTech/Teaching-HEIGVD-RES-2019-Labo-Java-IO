@@ -51,6 +51,8 @@ public class FileNumberingFilterWriter extends FilterWriter {
     if(!temp.equals("") && !temp.equals(substr)){
       super.write(result[1], 0, result[1].length());
     }
+
+
   }
 
   @Override
