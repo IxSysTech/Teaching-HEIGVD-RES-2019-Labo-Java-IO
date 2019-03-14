@@ -70,17 +70,25 @@ public class FileNumberingFilterWriter extends FilterWriter {
       writeLineNumber();
     }
 
-    super.write(c);
 
     if(r == '\r'){
+      super.write(c);
       isBackSlashR = true;
     } else if(isBackSlashR) {
       if (r == '\n'){
+        super.write(c);
         writeLineNumber();
+        isBackSlashR = false;
+      } else {
+        writeLineNumber();
+        super.write(c);
         isBackSlashR = false;
       }
     } else if(r == '\n'){
+      super.write(c);
       writeLineNumber();
+    } else {
+      super.write(c);
     }
   }
 
