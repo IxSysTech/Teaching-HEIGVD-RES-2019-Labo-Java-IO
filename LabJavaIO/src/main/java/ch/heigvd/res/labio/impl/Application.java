@@ -7,12 +7,13 @@ import ch.heigvd.res.labio.interfaces.IFileExplorer;
 import ch.heigvd.res.labio.interfaces.IFileVisitor;
 import ch.heigvd.res.labio.quotes.QuoteClient;
 import ch.heigvd.res.labio.quotes.Quote;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -84,7 +85,7 @@ public class Application implements IApplication {
     QuoteClient client = new QuoteClient();
     for (int i = 0; i < numberOfQuotes; i++) {
       Quote quote = client.fetchQuote();
-      storeQuote(quote, "quote-" + (i+1) + ".utf8");
+      storeQuote(quote, "quote-" + (i+1)  );
       LOG.info("Received a new joke with " + quote.getTags().size() + " tags.");
       for (String tag : quote.getTags()) {
         LOG.info("> " + tag);
@@ -118,7 +119,19 @@ public class Application implements IApplication {
    * @throws IOException 
    */
   void storeQuote(Quote quote, String filename) throws IOException {
+    String path = WORKSPACE_DIRECTORY;
 
+    for(String tag : quote.getTags()){
+      path += "/" + tag;
+    }
+
+    File file = new File(path + "/" + filename);
+    file.getParentFile().mkdirs();
+    file.createNewFile();
+
+    BufferedWriter writer = new BufferedWriter(new FileWriter(path + filename));
+    writer.write(quote.getQuote(), 0, quote.getQuote().length());
+    writer.close();
   }
   
   /**
@@ -130,11 +143,11 @@ public class Application implements IApplication {
     explorer.explore(new File(WORKSPACE_DIRECTORY), new IFileVisitor() {
       @Override
       public void visit(File file) {
-        /*
-         * There is a missing piece here. Notice how we use an anonymous class here. We provide the implementation
-         * of the the IFileVisitor interface inline. You just have to add the body of the visit method, which should
-         * be pretty easy (we want to write the filename, including the path, to the writer passed in argument).
-         */
+        try {
+          writer.write(file.getPath() + "\n", 0, file.getPath().length() + 1);
+        } catch (Exception e){
+          System.out.println("Error when writing file.");
+        }
       }
     });
   }
